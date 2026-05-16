@@ -1,0 +1,25 @@
+
+### Listar todos agentes
+GET http://localhost:3333/api/v1/agentes
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYmJhYjEzMS1iNWYyLTQyZDItYjdhMC0yNjc0ZjliZjFmMmUiLCJwcm9maWxlIjoiQ0xJRU5UIiwiaWF0IjoxNzUyNTUwMDMzLCJleHAiOjE3NTI2MzY0MzN9.gqJZxFsQK9SRQiTKEFFIZU0O7FHd3FZRo-zEmKDejEs
+
+### Consultar agentes
+GET http://localhost:3333/api/v1/agentes/1
+
+### Criar agente
+POST http://localhost:3333/api/v1/agentes
+Content-Type: application/json
+
+{
+  "nome": "Electrónico"
+}
+#Content-Type: application/json
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMjhiMjBmOC0xMTJlLTQ5NWItOWJmNC0zZWQwMzQ3YjIyZGQiLCJwcm9maWxlIjoiQ0xJRU5UIiwiaWF0IjoxNzUxMzg1NTE0LCJleHAiOjE3NTE0NzE5MTR9.yonVq5x-JBQ8NyGsagV-SrIlhJh2xSam9FWqryZ3zs4
+
+### Atualizar agente
+PATCH  http://localhost:3333/api/v1/agentes/1
+Content-Type: application/json
+
+{
+  "nome": "Bidão"
+}

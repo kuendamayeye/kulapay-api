@@ -4,45 +4,810 @@
 // Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client-prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-enum Papel {
-  USUARIO
+/*enum FuncaoUsuario {
+  UTILIZADOR
+  AGENTE
+  ADMIN
 }
 
-enum Status {
+enum FrequenciaCiclo {
+  SEMANAL
+  MENSAL
+}
+
+enum EstadoMembro {
+  ACTIVO
+  PENDENTE
+  SUSPENSO
+  SAIU
+}
+
+enum EstadoContribuicao {
+  PENDENTE
+  PAGO
+  ATRASADO
+  FALHOU
+}
+
+enum MetodoPagamento {
+  DINHEIRO
+  TRANSFERENCIA
+  REFERENCIA
+  MOBILE_MONEY
+}
+
+enum EstadoCredito {
+  PENDENTE
+  APROVADO
+  REJEITADO
+  ACTIVO
+  CONCLUIDO
+  INCUMPRIMENTO
+}
+
+enum EstadoConvite {
+  PENDENTE
+  ACEITE
+  EXPIRADO
+}
+
+enum TipoTransacaoCarteira {
+  DEPOSITO
+  LEVANTAMENTO
+  CONTRIBUICAO
+  RECEBIMENTO
+  CREDITO
+  REEMBOLSO
+}
+
+enum Genero {
+  MASCULINO
+  FEMININO
+}
+
+enum EstadoUtilizador {
   ACTIVO
   INACTIVO
+  BLOQUEADO
 }
 
-model Usuario {
-  id String @id @default(uuid())
-  nome String
-  email String @unique
+model Utilizador {
+  id                        String   @id @default(uuid())
+
+  nomeCompleto              String
+  email                     String?  @unique
+  telefone                  String   @unique
   hash String
   hashedRt String?
-  telefone String
-  papel Papel @default(USUARIO)
-  status Status @default(ACTIVO)
-  criado_em DateTime @default(now())
-  atualizado_em DateTime @updatedAt
+
+  genero                    Genero?
+  dataNascimento            DateTime?
+
+  fotoPerfil                String?
+
+  funcao                    FuncaoUsuario @default(UTILIZADOR)
+
+  telefoneVerificado        Boolean @default(false)
+  emailVerificado           Boolean @default(false)
+
+  numeroBI                  String?
+  endereco                  String?
+
+  saldoCarteira             Decimal @default(0)
+
+  elegivelCredito           Boolean @default(false)
+
+  criadoEm                  DateTime @default(now())
+  actualizadoEm             DateTime @updatedAt
+
+  memberships               MembroGrupo[]
+  contribuicoes             Contribuicao[]
+  creditos               Credito[]
+
+  gruposCriados             Grupo[] @relation("CriadorGrupo")
+
+  perfilAgente              Agente?
+
+  estado EstadoUtilizador @default(ACTIVO)
+
 
   tokensReset TokenReset[]
+
+  perfilCreditos PerfilCredito[]
+}*/
+
+
+
+/*model Agente {
+  id                    String @id @default(uuid())
+
+  utilizadorId          String @unique
+  utilizador            Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  numeroLicenca         String?
+
+  aprovado              Boolean @default(false)
+
+  criadoEm              DateTime @default(now())
+
+  contribuicaos Contribuicao[]
+
+  grupos Grupo[]
 }
+
+
+model Grupo {
+  id                           String @id @default(uuid())
+
+  nome                         String
+  descricao                    String?
+
+  valorPorCiclo                Decimal
+
+  maximoMembros                Int
+
+  frequenciaCiclo              FrequenciaCiclo
+
+  dataInicio                   DateTime
+
+  publico                      Boolean @default(false)
+
+  permitirEntradaAutomatica    Boolean @default(false)
+
+  nivelMinimoConfianca         Int @default(1)
+
+  criadoPorId                  String
+  criadoPor                    Utilizador @relation("CriadorGrupo", fields: [criadoPorId], references: [id])
+
+  criadoPorAgenteId            String?
+  criadoPorAgente              Agente? @relation(fields: [criadoPorAgenteId], references: [id])
+
+  criadoEm                     DateTime @default(now())
+
+  membros                      MembroGrupo[]
+  contribuicoes                Contribuicao[]
+  calendarioPagamentos         CalendarioPagamento[]
+}
+
+
+model MembroGrupo {
+  id                         String @id @default(uuid())
+
+  utilizadorId               String
+  grupoId                    String
+
+  dataEntrada                DateTime @default(now())
+
+  ordemRecebimento           Int
+
+  jaRecebeu                  Boolean @default(false)
+
+  estado                     EstadoMembro @default(ACTIVO)
+
+  utilizador                 Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  grupo                      Grupo @relation(fields: [grupoId], references: [id])
+
+  @@unique([utilizadorId, grupoId])
+}
+
+model Contribuicao {
+  id                         String @id @default(uuid())
+
+  utilizadorId               String
+  grupoId                    String
+
+  valor                      Decimal
+
+  pagoEm                     DateTime @default(now())
+
+  estado                     EstadoContribuicao
+
+  metodoPagamento            MetodoPagamento
+
+  referencia                 String?
+
+
+AgenteId            String?
+Agente              Agente? @relation(fields: [AgenteId], references: [id])
+
+  utilizador                 Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  grupo                      Grupo @relation(fields: [grupoId], references: [id])
+}
+
+model CalendarioPagamento {
+  id                         String @id @default(uuid())
+
+  grupoId                    String
+
+  membroId                   String
+
+  numeroCiclo                Int
+
+  dataPrevista               DateTime
+
+  pago                       Boolean @default(false)
+
+  pagoEm                     DateTime?
+
+  grupo                      Grupo @relation(fields: [grupoId], references: [id])
+}
+
+
+model Convite {
+  id                         String @id @default(uuid())
+
+  grupoId                    String
+
+  convidadoPorId             String
+
+  utilizadorConvidadoId      String?
+
+  telefone                   String?
+
+  token                      String @unique
+
+  estado                     EstadoConvite
+
+  expiraEm                   DateTime
+
+  criadoEm                   DateTime @default(now())
+}
+
+model PerfilCredito {
+  id                         String @id @default(uuid())
+
+  utilizadorId               String
+  utilizador                 Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  plafondAtual                Decimal
+
+  pontuacaoReputacao        Float @default(0)
+
+  nivelConfianca            Int @default(1)
+
+  ciclosCompletos   Int @default(1)
+
+  ultimaActividade  DateTime
+
+}
+
+model Credito {
+  id                         String @id @default(uuid())
+
+  utilizadorId               String
+
+  valorSolicitado            Decimal
+
+  valorAprovado              Decimal?
+
+  taxaJuro                   Float
+
+  duracaoMeses               Int
+
+  estado                     EstadoCredito
+
+  aprovadoEm                 DateTime?
+
+  dataLimite                 DateTime?
+
+  criadoEm                   DateTime @default(now())
+
+  utilizador                 Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  pagamentos                 PagamentoCredito[]
+}
+
+
+model PagamentoCredito {
+  id                         String @id @default(uuid())
+
+  creditoId               String
+
+  valor                      Decimal
+
+  pagoEm                     DateTime @default(now())
+
+  credito                 Credito @relation(fields: [creditoId], references: [id])
+}
+
+
+model TransacaoCarteira {
+  id                         String @id @default(uuid())
+
+  utilizadorId               String
+
+  tipo                       TipoTransacaoCarteira
+
+  valor                      Decimal
+
+  saldoAntes                 Decimal
+  saldoDepois                Decimal
+
+  descricao                  String?
+
+  criadoEm                   DateTime @default(now())
+}
+
+
+model Notificacao {
+  id                         String @id @default(uuid())
+
+  utilizadorId               String
+
+  titulo                     String
+  mensagem                   String
+
+  lida                       Boolean @default(false)
+
+  criadoEm                   DateTime @default(now())
+}*/
+
+// ENUMS
+
+
+enum EstadoUsuario {
+  ACTIVO
+  BLOQUEADO
+  SUSPENSO
+}
+
+enum EstadoCarteira {
+  ACTIVA
+  CONGELADA
+  ENCERRADA
+}
+
+enum TipoCarteira {
+  PESSOAL
+  AGENTE
+  COMERCIANTE
+  POUPANCA
+}
+
+enum EstadoTransaccao {
+  PENDENTE
+  SUCESSO
+  FALHADA
+  REVERTIDA
+}
+
+enum TipoTransaccao {
+  TRANSFERENCIA
+  DEPOSITO
+  LEVANTAMENTO
+  PAGAMENTO
+  PAGAMENTO_SERVICO
+  RECARGA
+  DEPOSITO_POUPANCA
+  DESEMBOLSO_CREDITO
+  PAGAMENTO_CREDITO
+}
+
+enum EstadoCredito {
+  PENDENTE
+  APROVADO
+  REJEITADO
+  ACTIVO
+  CONCLUIDO
+  INCUMPRIDO
+}
+
+enum EstadoKyc {
+  PENDENTE
+  VERIFICADO
+  REJEITADO
+}
+
+enum CanalNotificacao {
+  SMS
+  EMAIL
+  PUSH
+}
+
+enum EstadoNotificacao {
+  PENDENTE
+  ENVIADA
+  FALHADA
+}
+
+
+// UTILIZADORES
+
+
+model Utilizador {
+  id                    String   @id @default(uuid()) 
+
+  nomeCompleto          String
+  telefone              String   @unique
+  email                 String?  @unique
+
+  hashedRt String?
+
+  genero                String?
+  dataNascimento        DateTime?
+
+  numeroDocumento       String?
+
+  fotoPerfilUrl         String?
+
+  hashPin               String
+
+  idiomaPreferido       String @default("pt")
+
+  verificado            Boolean @default(false)
+
+  estado                EstadoUsuario @default(ACTIVO)
+
+  criadoEm              DateTime @default(now())
+  actualizadoEm         DateTime @updatedAt
+
+  // RELACIONAMENTOS
+
+  enderecos             EnderecoUtilizador[]
+  carteiras             Carteira[]
+  contasPoupanca        ContaPoupanca[]
+  creditos           Credito[]
+  documentosKyc         DocumentoKyc[]
+  notificacoes          Notificacao[]
+  sessoesDispositivo    SessaoDispositivo[]
+
+  agente                Agente?
+  comerciante           Comerciante?
+
+  logsAuditoria         LogAuditoria[]
+
+  tokenResets TokenReset[]
+
+  @@index([telefone])
+  @@index([numeroDocumento])
+}
+
 
 model TokenReset {
   id         String   @id @default(cuid())
   token      String
   expiryDate DateTime
 
-  id_usuario String?
-  usuario   Usuario?   @relation(fields: [id_usuario], references: [id])
+  utilizadorId String? 
+  utilizador   Utilizador?   @relation(fields: [utilizadorId], references: [id])
 
   @@map("tokens_reset")
+}
+
+
+// ENDEREÇOS
+model EnderecoUtilizador {
+  id                String @id @default(uuid()) 
+
+  utilizadorId      String 
+  utilizador        Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  provincia         String?
+  municipio         String?
+  comuna            String?
+  bairro            String?
+
+  latitude          Decimal? @db.Decimal(10, 7)
+  longitude         Decimal? @db.Decimal(10, 7)
+
+  criadoEm          DateTime @default(now())
+
+  @@index([utilizadorId])
+}
+
+
+// CARTEIRAS
+model Carteira {
+  id                    String @id @default(uuid()) 
+
+  utilizadorId          String 
+  utilizador            Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  saldo                 Decimal @default(0) @db.Decimal(18, 2)
+
+  moeda                 String @default("AOA")
+
+  tipoCarteira          TipoCarteira @default(PESSOAL)
+
+  estado                EstadoCarteira @default(ACTIVA)
+
+  criadoEm              DateTime @default(now())
+  actualizadoEm         DateTime @updatedAt
+
+  transaccoesEnviadas   Transaccao[] @relation("TransaccoesEnviadas")
+  transaccoesRecebidas  Transaccao[] @relation("TransaccoesRecebidas")
+
+  creditos           Credito[]
+
+  @@index([utilizadorId])
+  contaPoupancas ContaPoupanca[]
+}
+
+
+// TRANSACÇÕES
+
+
+model Transaccao {
+  id                        String @id @default(uuid()) 
+
+  codigoReferencia          String @unique
+
+  carteiraRemetenteId       String? 
+  carteiraDestinoId         String? 
+
+  carteiraRemetente         Carteira? @relation("TransaccoesEnviadas", fields: [carteiraRemetenteId], references: [id])
+
+  carteiraDestino           Carteira? @relation("TransaccoesRecebidas",fields: [carteiraDestinoId],references: [id])
+
+  tipoTransaccao            TipoTransaccao
+
+  valor                     Decimal @db.Decimal(18, 2)
+
+  taxa                      Decimal @default(0) @db.Decimal(18, 2)
+
+  moeda                     String @default("AOA")
+
+  estado                    EstadoTransaccao @default(PENDENTE)
+
+  canal                     String?
+
+  descricao                 String?
+
+  criadoEm                  DateTime @default(now())
+
+  concluidoEm               DateTime?
+
+  pagamentoCredito       PagamentoCredito?
+
+  @@index([codigoReferencia])
+  @@index([carteiraRemetenteId])
+  @@index([carteiraDestinoId])
+  @@index([estado])
+}
+
+
+// AGENTES
+
+
+model Agente {
+  id                    String @id @default(uuid()) 
+
+  utilizadorId          String @unique 
+  utilizador            Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  nomeNegocio           String
+
+  codigoAgente          String @unique
+
+  saldoOperacional      Decimal @default(0) @db.Decimal(18, 2)
+
+  estado                String
+
+  criadoEm              DateTime @default(now())
+}
+
+
+// COMERCIANTES
+
+
+model Comerciante {
+  id                    String @id @default(uuid()) 
+
+  utilizadorId          String @unique 
+  utilizador            Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  nomeNegocio           String
+
+  tipoNegocio           String?
+
+  codigoComerciante     String @unique
+
+  qrCode                String?
+
+  estado                String
+
+  criadoEm              DateTime @default(now())
+}
+
+
+// CONTAS DE POUPANÇA
+
+
+model ContaPoupanca {
+  id                    String @id @default(uuid()) 
+
+  utilizadorId          String 
+  utilizador            Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  carteiraId            String 
+  carteira              Carteira @relation(fields: [carteiraId], references: [id])
+
+  nome                  String
+
+  valorMeta             Decimal? @db.Decimal(18, 2)
+
+  valorActual           Decimal @default(0) @db.Decimal(18, 2)
+
+  taxaJuro              Decimal? @db.Decimal(5, 2)
+
+  dataMaturidade        DateTime?
+
+  estado                String
+
+  criadoEm              DateTime @default(now())
+
+  @@index([utilizadorId])
+}
+
+
+// EMPRÉSTIMOS
+
+
+model Credito {
+  id                    String @id @default(uuid()) 
+
+  utilizadorId          String 
+  utilizador            Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  carteiraId            String 
+  carteira              Carteira @relation(fields: [carteiraId], references: [id])
+
+  valorPrincipal        Decimal @db.Decimal(18, 2)
+
+  taxaJuro              Decimal @db.Decimal(5, 2)
+
+  valorTotal            Decimal @db.Decimal(18, 2)
+
+  valorPago             Decimal @default(0) @db.Decimal(18, 2)
+
+  duracaoMeses          Int
+
+  pontuacaoCredito      Int?
+
+  estado                EstadoCredito @default(PENDENTE)
+
+  aprovadoEm            DateTime?
+
+  vencimentoEm          DateTime?
+
+  criadoEm              DateTime @default(now())
+
+  pagamentos            PagamentoCredito[]
+
+  @@index([utilizadorId])
+  @@index([estado])
+}
+
+
+// PAGAMENTOS DE EMPRÉSTIMOS
+
+
+model PagamentoCredito {
+  id                    String @id @default(uuid()) 
+
+  creditoId          String 
+  credito            Credito @relation(fields: [creditoId], references: [id])
+
+  transaccaoId          String @unique 
+  transaccao            Transaccao @relation(fields: [transaccaoId], references: [id])
+
+  valor                 Decimal @db.Decimal(18, 2)
+
+  pagoEm                DateTime @default(now())
+
+  @@index([creditoId])
+}
+
+
+// DOCUMENTOS KYC
+
+
+model DocumentoKyc {
+  id                    String @id @default(uuid()) 
+
+  utilizadorId          String 
+  utilizador            Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  tipoDocumento         String
+
+  numeroDocumento       String
+
+  frenteDocumentoUrl    String?
+  versoDocumentoUrl     String?
+
+  selfieUrl             String?
+
+  estadoVerificacao     EstadoKyc @default(PENDENTE)
+
+  verificadoEm          DateTime?
+
+  criadoEm              DateTime @default(now())
+
+  @@index([utilizadorId])
+}
+
+
+// SESSÕES DE DISPOSITIVO
+
+
+model SessaoDispositivo {
+  id                    String @id @default(uuid()) 
+
+  utilizadorId          String 
+  utilizador            Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  identificadorDispositivo String
+
+  nomeDispositivo       String?
+
+  enderecoIp            String?
+
+  ultimoAcesso          DateTime?
+
+  activa                Boolean @default(true)
+
+  criadoEm              DateTime @default(now())
+
+  @@index([utilizadorId])
+}
+
+
+// NOTIFICAÇÕES
+
+
+model Notificacao {
+  id                    String @id @default(uuid()) 
+
+  utilizadorId          String 
+  utilizador            Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  tipo                  String
+
+  titulo                String
+
+  mensagem              String
+
+  canal                 CanalNotificacao
+
+  estado                EstadoNotificacao @default(PENDENTE)
+
+  enviadaEm             DateTime?
+
+  criadoEm              DateTime @default(now())
+
+  @@index([utilizadorId])
+}
+
+
+// LOGS DE AUDITORIA
+
+
+model LogAuditoria {
+  id                    String @id @default(uuid()) 
+
+  utilizadorId          String? 
+  utilizador            Utilizador? @relation(fields: [utilizadorId], references: [id])
+
+  accao                 String
+
+  tipoEntidade          String
+
+  entidadeId            String 
+
+  metadados             Json?
+
+  criadoEm              DateTime @default(now())
+
+  @@index([utilizadorId])
+  @@index([tipoEntidade])
 }
 

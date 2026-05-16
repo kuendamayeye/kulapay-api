@@ -1,0 +1,35 @@
+
+### Listar todos creditos
+GET http://localhost:3000/api/v1/creditos
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYmJhYjEzMS1iNWYyLTQyZDItYjdhMC0yNjc0ZjliZjFmMmUiLCJwcm9maWxlIjoiQ0xJRU5UIiwiaWF0IjoxNzUyNTUwMDMzLCJleHAiOjE3NTI2MzY0MzN9.gqJZxFsQK9SRQiTKEFFIZU0O7FHd3FZRo-zEmKDejEs
+
+### Consultar creditos
+GET http://localhost:3000/api/v1/creditos/1
+
+### Criar crédito
+POST http://localhost:3000/api/v1/creditos
+Content-Type: application/json
+
+{
+  "utilizadorId": "b1b1691f-1166-4dee-8916-049f2dda9aaa",
+  "carteiraId": "8245504e-aeee-44d7-8ea0-4d281b22b370",
+  "valorPrincipal":      50000,
+  "taxaJuro":              0.3,
+  "valorTotal":            60000,
+  "duracaoMeses":          3,
+  "pontuacaoCredito":      50,
+}
+#Content-Type: application/json
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMjhiMjBmOC0xMTJlLTQ5NWItOWJmNC0zZWQwMzQ3YjIyZGQiLCJwcm9maWxlIjoiQ0xJRU5UIiwiaWF0IjoxNzUxMzg1NTE0LCJleHAiOjE3NTE0NzE5MTR9.yonVq5x-JBQ8NyGsagV-SrIlhJh2xSam9FWqryZ3zs4
+
+### Atualizar crédito
+PATCH  http://localhost:3000/api/v1/creditos/1
+Content-Type: application/json
+
+{
+  "nomeNegocio":"Negocio da Marta",
+  "tipoNegocio":"Venda de pastas",
+  "codigocrédito":"KPMLFO",
+  "qrCode":"ggdfghdfhdh",
+  "estado":"ACTIVO"
+}

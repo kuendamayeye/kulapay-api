@@ -1,0 +1,34 @@
+
+### Listar todos comerciantes
+GET http://localhost:3000/api/v1/comerciantes
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYmJhYjEzMS1iNWYyLTQyZDItYjdhMC0yNjc0ZjliZjFmMmUiLCJwcm9maWxlIjoiQ0xJRU5UIiwiaWF0IjoxNzUyNTUwMDMzLCJleHAiOjE3NTI2MzY0MzN9.gqJZxFsQK9SRQiTKEFFIZU0O7FHd3FZRo-zEmKDejEs
+
+### Consultar comerciantes
+GET http://localhost:3000/api/v1/comerciantes/1
+
+### Criar comerciante
+POST http://localhost:3000/api/v1/comerciantes
+Content-Type: application/json
+
+{
+  "utilizadorId":"b1b1691f-1166-4dee-8916-049f2dda9aaa",
+  "nomeNegocio":"Negocio da Marta",
+  "tipoNegocio":"Venda de pastas",
+  "codigoComerciante":"KPMLFO",
+  "qrCode":"ggdfghdfhdh",
+  "estado":"ACTIVO"
+}
+#Content-Type: application/json
+#Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkMjhiMjBmOC0xMTJlLTQ5NWItOWJmNC0zZWQwMzQ3YjIyZGQiLCJwcm9maWxlIjoiQ0xJRU5UIiwiaWF0IjoxNzUxMzg1NTE0LCJleHAiOjE3NTE0NzE5MTR9.yonVq5x-JBQ8NyGsagV-SrIlhJh2xSam9FWqryZ3zs4
+
+### Atualizar comerciante
+PATCH  http://localhost:3000/api/v1/comerciantes/1
+Content-Type: application/json
+
+{
+  "nomeNegocio":"Negocio da Marta",
+  "tipoNegocio":"Venda de pastas",
+  "codigoComerciante":"KPMLFO",
+  "qrCode":"ggdfghdfhdh",
+  "estado":"ACTIVO"
+}
