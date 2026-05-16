@@ -5,6 +5,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  engine = "client"
 }
 
 datasource db {
@@ -419,6 +420,38 @@ enum EstadoNotificacao {
   FALHADA
 }
 
+enum EstadoMembro {
+  ACTIVO
+  PENDENTE
+  SUSPENSO
+  SAIU
+}
+
+enum EstadoContribuicao {
+  PENDENTE
+  PAGO
+  ATRASADO
+  FALHOU
+}
+
+enum MetodoPagamento {
+  DINHEIRO
+  TRANSFERENCIA
+  REFERENCIA
+  MOBILE_MONEY
+}
+
+enum FrequenciaCiclo {
+  SEMANAL
+  MENSAL
+}
+
+enum EstadoConvite {
+  PENDENTE
+  ACEITE
+  EXPIRADO
+}
+
 
 // UTILIZADORES
 
@@ -469,6 +502,9 @@ model Utilizador {
 
   @@index([telefone])
   @@index([numeroDocumento])
+  membroGrupos MembroGrupo[]
+  grupos Grupo[] @relation("CriadorGrupo")
+  contribuicaos Contribuicao[]
 }
 
 
@@ -593,6 +629,10 @@ model Agente {
   estado                String
 
   criadoEm              DateTime @default(now())
+
+  grupos Grupo[]
+
+  contribuicaos Contribuicao[]
 }
 
 
@@ -811,3 +851,121 @@ model LogAuditoria {
   @@index([tipoEntidade])
 }
 
+
+model Grupo {
+  id                           String @id @default(uuid())
+
+  nome                         String
+  descricao                    String?
+
+  valorPorCiclo                Decimal
+
+  maximoMembros                Int
+
+  frequenciaCiclo              FrequenciaCiclo
+
+  dataInicio                   DateTime
+
+  publico                      Boolean @default(false)
+
+  permitirEntradaAutomatica    Boolean @default(false)
+
+  nivelMinimoConfianca         Int @default(1)
+
+  criadoPorId                  String
+  criadoPor                    Utilizador @relation("CriadorGrupo", fields: [criadoPorId], references: [id])
+
+  criadoPorAgenteId            String?
+  criadoPorAgente              Agente? @relation(fields: [criadoPorAgenteId], references: [id])
+
+  criadoEm                     DateTime @default(now())
+
+  membros                      MembroGrupo[]
+  contribuicoes                Contribuicao[]
+  calendarioPagamentos         CalendarioPagamento[]
+}
+
+
+model MembroGrupo {
+  id                         String @id @default(uuid())
+
+  utilizadorId               String
+  grupoId                    String
+
+  dataEntrada                DateTime @default(now())
+
+  ordemRecebimento           Int
+
+  jaRecebeu                  Boolean @default(false)
+
+  estado                     EstadoMembro @default(ACTIVO)
+
+  utilizador                 Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  grupo                      Grupo @relation(fields: [grupoId], references: [id])
+
+  @@unique([utilizadorId, grupoId])
+}
+
+model Contribuicao {
+  id                         String @id @default(uuid())
+
+  utilizadorId               String
+  grupoId                    String
+
+  valor                      Decimal
+
+  pagoEm                     DateTime @default(now())
+
+  estado                     EstadoContribuicao
+
+  metodoPagamento            MetodoPagamento
+
+  referencia                 String?
+
+
+AgenteId            String?
+Agente              Agente? @relation(fields: [AgenteId], references: [id])
+
+  utilizador                 Utilizador @relation(fields: [utilizadorId], references: [id])
+
+  grupo                      Grupo @relation(fields: [grupoId], references: [id])
+}
+
+model Convite {
+  id                         String @id @default(uuid())
+
+  grupoId                    String
+
+  convidadoPorId             String
+
+  utilizadorConvidadoId      String?
+
+  telefone                   String?
+
+  token                      String @unique
+
+  estado                     EstadoConvite
+
+  expiraEm                   DateTime
+
+  criadoEm                   DateTime @default(now())
+}
+
+model CalendarioPagamento {
+  id                         String @id @default(uuid())
+
+  grupoId                    String
+
+  membroId                   String
+
+  numeroCiclo                Int
+
+  dataPrevista               DateTime
+
+  pago                       Boolean @default(false)
+
+  pagoEm                     DateTime?
+
+  grupo                      Grupo @relation(fields: [grupoId], references: [id])
+}
