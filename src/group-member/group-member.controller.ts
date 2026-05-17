@@ -15,18 +15,24 @@ import { UpdateGroupMemberDto } from './dto/update-group-member.dto';
 export class GroupMemberController {
   constructor(private readonly groupMemberService: GroupMemberService) {}
 
-  @Post('entrar')
-  join() {
-    return 'Entrar no grupo';
-  }
-
-  @Post('sair/:id')
-  leave(@Param('id') id: string) {
-    return `Sair do grupo ${id}`;
+  @Post()
+  entrarGrupo(
+    @Body()
+    body: {
+      utilizadorId: string;
+      grupoId: string;
+    },
+  ) {
+    return this.groupMemberService.entrarGrupo(body.utilizadorId, body.grupoId);
   }
 
   @Get('grupo/:grupoId')
-  findByGroup(@Param('grupoId') grupoId: string) {
-    return `Membros do grupo ${grupoId}`;
+  listarMembros(@Param('grupoId') grupoId: string) {
+    return this.groupMemberService.listarMembros(grupoId);
+  }
+
+  @Delete(':id')
+  removerMembro(@Param('id') id: string) {
+    return this.groupMemberService.removerMembro(id);
   }
 }

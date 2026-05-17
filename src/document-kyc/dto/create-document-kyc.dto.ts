@@ -9,7 +9,7 @@ import {
 import { EstadoKyc } from '@prisma/client';
 
 export class CreateDocumentKycDto {
-  @IsUUID()
+  @IsString()
   utilizadorId: string;
 
   @IsString()

@@ -45,58 +45,20 @@ export class SupabaseService {
     return publicUrl.publicUrl;
   }*/
 
-  async uploadMedReport(
-    fileBuffer: Buffer,
-    filePath: string,
-    contentType: string,
-  ) {
+  async uploadFile(bucket: string, path: string, file: Express.Multer.File) {
     const { data, error } = await this.supabase.storage
-      .from('fotos')
-      .upload(filePath, fileBuffer, {
-        contentType,
+      .from(bucket)
+      .upload(path, file.buffer, {
+        contentType: file.mimetype,
         upsert: true,
       });
 
-    if (error) {
-      console.error('❌ Erro ao fazer upload no Supabase:', error.message);
-      throw new Error('Falha ao enviar o laudo para o armazenamento.');
-    }
+    if (error) throw error;
 
-    // Gera URL pública ou assinada
-    const { data: signedUrl } = await this.supabase.storage
-      .from('fotos')
-      .createSignedUrl(filePath, 60 * 60 * 24); // 24h
+    const { data: publicUrl } = this.supabase.storage
+      .from(bucket)
+      .getPublicUrl(data.path);
 
-    return signedUrl.signedUrl;
-  }
-
-  async downloadFile(filePath: string) {
-    const { data, error } = await this.supabase.storage
-      .from('laudos')
-      .download(filePath);
-
-    if (error) {
-      console.error('Erro ao baixar arquivo do Supabase:', error.message);
-      throw new Error('Falha ao obter arquivo do Supabase.');
-    }
-
-    const arrayBuffer = await data.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    return {
-      buffer,
-      name: filePath.split('/').pop(),
-      mimeType: this.getMimeType(filePath),
-    };
-  }
-
-  private getMimeType(filePath: string): string {
-    if (filePath.endsWith('.pdf')) return 'application/pdf';
-    if (filePath.endsWith('.docx'))
-      return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-    if (filePath.endsWith('.png')) return 'image/png';
-    if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg'))
-      return 'image/jpeg';
-    return 'application/octet-stream';
+    return publicUrl.publicUrl;
   }
 }

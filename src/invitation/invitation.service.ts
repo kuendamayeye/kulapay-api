@@ -1,26 +1,52 @@
 import { Injectable } from '@nestjs/common';
 import { CreateInvitationDto } from './dto/create-invitation.dto';
 import { UpdateInvitationDto } from './dto/update-invitation.dto';
+import { randomUUID } from 'crypto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class InvitationService {
-  create(createInvitationDto: CreateInvitationDto) {
-    return 'This action adds a new invitation';
+  constructor(private prisma: PrismaService) {}
+
+  async convidar(data: {
+    grupoId: string;
+    convidadoPorId: string;
+    telefone?: string;
+  }) {
+    return this.prisma.convite.create({
+      data: {
+        grupoId: data.grupoId,
+        convidadoPorId: data.convidadoPorId,
+        telefone: data.telefone,
+        token: randomUUID(),
+        estado: 'PENDENTE',
+        expiraEm: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24h
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all invitation`;
-  }
+  async aceitarConvite(token: string, utilizadorId: string) {
+    const convite = await this.prisma.convite.findUnique({
+      where: { token },
+    });
 
-  findOne(id: number) {
-    return `This action returns a #${id} invitation`;
-  }
+    if (!convite || convite.estado !== 'PENDENTE') {
+      throw new Error('Convite inválido');
+    }
 
-  update(id: number, updateInvitationDto: UpdateInvitationDto) {
-    return `This action updates a #${id} invitation`;
-  }
+    return this.prisma.$transaction(async (tx) => {
+      await tx.membroGrupo.create({
+        data: {
+          grupoId: convite.grupoId,
+          utilizadorId,
+          ordemRecebimento: 1,
+        },
+      });
 
-  remove(id: number) {
-    return `This action removes a #${id} invitation`;
+      return tx.convite.update({
+        where: { id: convite.id },
+        data: { estado: 'ACEITE' },
+      });
+    });
   }
 }

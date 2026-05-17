@@ -16,13 +16,17 @@ export class InvitationController {
   constructor(private readonly invitationService: InvitationService) {}
 
   @Post()
-  create() {
-    return 'Criar convite';
+  convidar(@Body() body: any) {
+    return this.invitationService.convidar(body);
   }
 
-  @Post('aceitar/:token')
-  accept(@Param('token') token: string) {
-    return `Aceitar convite ${token}`;
+  @Patch('aceitar/:token')
+  aceitarConvite(
+    @Param('token') token: string,
+    @Body('utilizadorId')
+    utilizadorId: string,
+  ) {
+    return this.invitationService.aceitarConvite(token, utilizadorId);
   }
 
   @Get()

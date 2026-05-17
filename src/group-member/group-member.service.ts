@@ -1,26 +1,48 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateGroupMemberDto } from './dto/create-group-member.dto';
 import { UpdateGroupMemberDto } from './dto/update-group-member.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class GroupMemberService {
-  create(createGroupMemberDto: CreateGroupMemberDto) {
-    return 'This action adds a new groupMember';
+  constructor(private prisma: PrismaService) {}
+
+  async entrarGrupo(utilizadorId: string, grupoId: string) {
+    const grupo = await this.prisma.grupo.findUnique({
+      where: { id: grupoId },
+      include: { membros: true },
+    });
+
+    if (!grupo) throw new BadRequestException('Grupo não existe');
+
+    if (grupo.membros.length >= grupo.maximoMembros) {
+      throw new BadRequestException('Grupo cheio');
+    }
+
+    return this.prisma.membroGrupo.create({
+      data: {
+        utilizadorId,
+        grupoId,
+        ordemRecebimento: grupo.membros.length + 1,
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all groupMember`;
+  async listarMembros(grupoId: string) {
+    return this.prisma.membroGrupo.findMany({
+      where: { grupoId },
+      include: {
+        utilizador: true,
+      },
+      orderBy: {
+        ordemRecebimento: 'asc',
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} groupMember`;
-  }
-
-  update(id: number, updateGroupMemberDto: UpdateGroupMemberDto) {
-    return `This action updates a #${id} groupMember`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} groupMember`;
+  async removerMembro(id: string) {
+    return this.prisma.membroGrupo.delete({
+      where: { id },
+    });
   }
 }

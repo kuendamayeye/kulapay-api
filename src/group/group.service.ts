@@ -33,4 +33,53 @@ export class GroupService {
       },
     });
   }
+
+  async criarGrupo(data: {
+    nome: string;
+    descricao?: string;
+    valorPorCiclo: number;
+    maximoMembros: number;
+    frequenciaCiclo: any;
+    dataInicio: Date;
+    publico?: boolean;
+    permitirEntradaAutomatica?: boolean;
+    nivelMinimoConfianca?: number;
+    criadoPorId: string;
+    criadoPorAgenteId?: string;
+  }) {
+    return this.prisma.grupo.create({
+      data: {
+        ...data,
+        membros: {
+          create: {
+            utilizadorId: data.criadoPorId,
+            ordemRecebimento: 1,
+            estado: 'ACTIVO',
+          },
+        },
+      },
+      include: {
+        membros: true,
+      },
+    });
+  }
+
+  async listarGrupos() {
+    return this.prisma.grupo.findMany({
+      include: {
+        membros: true,
+      },
+    });
+  }
+
+  async obterGrupo(id: string) {
+    return this.prisma.grupo.findUnique({
+      where: { id },
+      include: {
+        membros: true,
+        contribuicoes: true,
+        calendarioPagamentos: true,
+      },
+    });
+  }
 }

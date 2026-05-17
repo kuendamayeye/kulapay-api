@@ -14,6 +14,12 @@ PATCH  http://localhost:3000/api/v1/carteiras/8245504e-aeee-44d7-8ea0-4d281b22b3
 Content-Type: application/json
 
 {
-  "saldo": 10000,
-  "tipoCarteira": "COMERCIANTE"
+  "utilizadorId":"",
+  "saldo":""
+
+  "moeda"                 String @default("AOA")
+
+  "tipoCarteira"          TipoCarteira @default(PESSOAL)
+
+  "estado"                EstadoCarteira @default(ACTIVA)
 }

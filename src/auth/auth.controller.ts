@@ -29,13 +29,6 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
-  @Post('')
-  @HttpCode(HttpStatus.CREATED)
-  signupLocal(@Body() createUserDto: CreateUserDto): Promise<Tokens> {
-    return this.authService.signupLocal(createUserDto);
-  }
-
-  @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   signinLocal(@Body() dto: AuthDto): Promise<Tokens> {
@@ -45,6 +38,7 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   logout(@GetCurrentUserId() userId: string) {
+    console.log(userId);
     return this.authService.logout(userId);
   }
 

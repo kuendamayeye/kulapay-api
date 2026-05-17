@@ -16,13 +16,13 @@ export class ContributionController {
   constructor(private readonly contributionService: ContributionService) {}
 
   @Post()
-  create() {
-    return 'Criar contribuição';
+  contribuir(@Body() body: any) {
+    return this.contributionService.contribuir(body);
   }
 
   @Get('grupo/:grupoId')
-  findByGroup(@Param('grupoId') grupoId: string) {
-    return `Contribuições do grupo ${grupoId}`;
+  listarContribuicoes(@Param('grupoId') grupoId: string) {
+    return this.contributionService.listarContribuicoes(grupoId);
   }
 
   @Get('utilizador/:id')
