@@ -374,6 +374,7 @@ enum TipoCarteira {
   POUPANCA
 }
 
+
 enum EstadoTransaccao {
   PENDENTE
   SUCESSO
@@ -543,7 +544,11 @@ model EnderecoUtilizador {
 
 // CARTEIRAS
 model Carteira {
-  id                    String @id @default(uuid()) 
+  id                    String @id @default(uuid())
+
+  entidade              String
+
+  referencia            String?
 
   utilizadorId          String 
   utilizador            Utilizador @relation(fields: [utilizadorId], references: [id])

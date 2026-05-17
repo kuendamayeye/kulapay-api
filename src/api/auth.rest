@@ -5,7 +5,7 @@ POST http://localhost:3000/api/v1/auth/login
 Content-Type: application/json
 
 {
-  "telefone": "949036363",
+  "telefone": "929564424",
   "senha": "1234"
 }
 #Content-Type: application/json
@@ -14,4 +14,4 @@ Content-Type: application/json
 ### Logout
 POST  http://localhost:3000/api/v1/auth/logout
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMWIxNjkxZi0xMTY2LTRkZWUtODkxNi0wNDlmMmRkYTlhYWEiLCJlbWFpbCI6Ijk0OTAzNjM2MyIsImlhdCI6MTc3ODkyMTU3OSwiZXhwIjoxNzc4OTIyNDc5fQ.aggQR6JnxJvU7AP8NCogUAmvcMSEo2Y-ldt07lZ22CY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYTNjMWMyYi02MmFhLTRiOGMtOTAwMy0yZWRhYWZhMzM1OTQiLCJlbWFpbCI6IjkyOTU2NDQyNCIsImlhdCI6MTc3OTAwNDE0NSwiZXhwIjoxNzc5MDA1MDQ1fQ.hthUwkeE7kpFw3n9IxDByjbvrXuHUztdlMEaxBwOJDM
