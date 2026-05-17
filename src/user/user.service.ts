@@ -12,6 +12,9 @@ export class UserService {
   async register(data: {
     nomeCompleto: string;
     telefone: string;
+    email?: string;
+    genero?: string;
+    dataNascimento?: Date;
     pin: string;
   }) {
     // 1. Verificar se o número de telefone já existe
@@ -32,20 +35,23 @@ export class UserService {
         data: {
           nomeCompleto: data.nomeCompleto,
           telefone: data.telefone,
+          email: data.email,
+          genero: data.genero,
+          dataNascimento: data.dataNascimento,
           hashPin: hashPin,
           estado: EstadoUsuario.ACTIVO,
         },
       });
 
       // Criar automaticamente a carteira pessoal em Kwanzas (AOA)
-      await tx.carteira.create({
+      /*await tx.carteira.create({
         data: {
           utilizadorId: novoUtilizador.id,
           tipoCarteira: TipoCarteira.PESSOAL,
           saldo: 0,
           moeda: 'AOA',
         },
-      });
+      });*/
 
       return novoUtilizador;
     });
